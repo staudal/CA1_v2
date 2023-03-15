@@ -1,6 +1,7 @@
 package facades;
 
 import dtos.AddressDTO;
+import dtos.PersonDTO;
 import entities.Address;
 import entities.Person;
 import lombok.NoArgsConstructor;

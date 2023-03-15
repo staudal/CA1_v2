@@ -8,6 +8,8 @@ package utils;
 import java.util.Properties;
 import java.util.Set;
 import com.google.gson.*;
+import dtos.PersonDTO;
+
 import java.io.UnsupportedEncodingException;
 
 /**

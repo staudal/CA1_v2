@@ -1,6 +1,7 @@
 package facades;
 
 import dtos.HobbyDTO;
+import dtos.PersonDTO;
 import entities.Hobby;
 import lombok.NoArgsConstructor;
 
