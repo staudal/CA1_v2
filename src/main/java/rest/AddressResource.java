@@ -31,7 +31,7 @@ public class AddressResource {
     @Path("/all")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllCities() {
-        return Response.ok().entity(GSON.toJson(FACADE.getAllAddresses())).build();
+        return Response.ok().header("Access-Control-Allow-Origin", "*").entity(GSON.toJson(FACADE.getAllAddresses())).build();
     }
 
     @POST

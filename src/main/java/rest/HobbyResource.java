@@ -28,11 +28,12 @@ public class HobbyResource {
         return "{\"msg\":\"Hello World\"}";
     }
 
+    // CORS
     @GET
     @Path("/all")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAllCities() {
-        return Response.ok().entity(GSON.toJson(FACADE.getAllHobbies())).build();
+    public Response getAllHobbies() {
+        return Response.ok().header("Access-Control-Allow-Origin", "*").entity(GSON.toJson(FACADE.getAllHobbies())).build();
     }
 
     @POST

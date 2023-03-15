@@ -32,7 +32,7 @@ public class PhoneResource {
     @Path("/all")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllCities() {
-        return Response.ok().entity(GSON.toJson(FACADE.getAllPhones())).build();
+        return Response.ok().header("Access-Control-Allow-Origin", "*").entity(GSON.toJson(FACADE.getAllPhones())).build();
     }
 
     @POST
