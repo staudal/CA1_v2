@@ -20,6 +20,6 @@ public class ApplicationConfig extends Application {
         resources.add(CityInfoResource.class);
         resources.add(HobbyResource.class);
         resources.add(PhoneResource.class);
+        resources.add(AddressResource.class);
     }
-    
 }

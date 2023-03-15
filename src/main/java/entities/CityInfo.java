@@ -3,6 +3,7 @@ package entities;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "CityInfo")
 public class CityInfo {
 
@@ -20,7 +22,7 @@ public class CityInfo {
     private Long id;
 
     @Column(name = "zipCode")
-    private int zipCode;
+    private String zipCode;
 
     @Column(name = "city")
     private String city;
@@ -28,7 +30,7 @@ public class CityInfo {
     @OneToMany(mappedBy = "cityInfo")
     private List<Address> addresses;
 
-    public CityInfo(int zipCode, String city) {
+    public CityInfo(String zipCode, String city) {
         this.zipCode = zipCode;
         this.city = city;
     }

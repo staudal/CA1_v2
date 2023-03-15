@@ -2,9 +2,8 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.HobbyDTO;
-import dtos.PhoneDTO;
-import facades.CityInfoFacade;
+import dtos.AddressDTO;
+import facades.AddressFacade;
 import facades.HobbyFacade;
 import utils.EMF_Creator;
 
@@ -14,12 +13,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 //Todo Remove or change relevant parts before ACTUAL use
-@Path("hobby")
-public class HobbyResource {
+@Path("address")
+public class AddressResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
        
-    private static final HobbyFacade FACADE =  HobbyFacade.getHobbyFacade(EMF);
+    private static final AddressFacade FACADE =  AddressFacade.getAddressFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
             
     @GET
@@ -32,36 +31,36 @@ public class HobbyResource {
     @Path("/all")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllCities() {
-        return Response.ok().entity(GSON.toJson(FACADE.getAllHobbies())).build();
+        return Response.ok().entity(GSON.toJson(FACADE.getAllAddresses())).build();
     }
 
     @POST
     @Path("/add")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response addHobby(String hobby) {
-        HobbyDTO hobbyDTO = GSON.fromJson(hobby, HobbyDTO.class);
-        HobbyDTO newHobby = FACADE.create(hobbyDTO);
-        return Response.ok().entity(GSON.toJson(newHobby)).build();
+    public Response addAddress(String address) {
+        AddressDTO addressDTO = GSON.fromJson(address, AddressDTO.class);
+        AddressDTO newAddress = FACADE.create(addressDTO);
+        return Response.ok().entity(GSON.toJson(newAddress)).build();
     }
 
     @PUT
     @Path("/edit/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response editHobby(@PathParam("id") Long id, String hobby) {
-        HobbyDTO hobbyDTO = GSON.fromJson(hobby, HobbyDTO.class);
-        hobbyDTO.setId(id);
-        HobbyDTO newHobby = FACADE.editHobby(hobbyDTO);
-        return Response.ok().entity(GSON.toJson(newHobby)).build();
+    public Response editAddress(@PathParam("id") Long id, String address) {
+        AddressDTO addressDTO = GSON.fromJson(address, AddressDTO.class);
+        addressDTO.setId(id);
+        AddressDTO newAddress = FACADE.editAddress(addressDTO);
+        return Response.ok().entity(GSON.toJson(newAddress)).build();
     }
 
     @DELETE
     @Path("/delete/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response deleteHobby(@PathParam("id") Long id) {
-        HobbyDTO hobbyDTO = FACADE.deleteHobby(id);
-        return Response.ok().entity(GSON.toJson(hobbyDTO)).build();
+    public Response deleteAddress(@PathParam("id") Long id) {
+        AddressDTO addressDTO = FACADE.deleteAddress(id);
+        return Response.ok().entity(GSON.toJson(addressDTO)).build();
     }
 }

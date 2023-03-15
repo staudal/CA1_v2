@@ -30,7 +30,6 @@ public class CityInfoFacade {
         return emf.createEntityManager();
     }
 
-    // Get all city info entities
     public List<CityInfoDTO> getAllCities () {
         EntityManager em = getEntityManager();
         try {
@@ -56,12 +55,37 @@ public class CityInfoFacade {
         return new CityInfoDTO(cityInfo);
     }
 
-    // Get city from personDTO
-    public CityInfoDTO getCityFromPerson (PersonDTO personDTO) {
+    // Edit city
+    public CityInfoDTO editCity (CityInfoDTO cityInfoDTO) {
         EntityManager em = getEntityManager();
-        Person person = em.find(Person.class, personDTO.getId());
         try {
-            return new CityInfoDTO(em.find(CityInfo.class, person.getAddress().getCityInfo().getId()));
+            em.getTransaction().begin();
+            CityInfo cityInfo = em.find(CityInfo.class, cityInfoDTO.getId());
+            System.out.println(cityInfo);
+            if (cityInfoDTO.getCity() != null) {
+                cityInfo.setCity(cityInfoDTO.getCity());
+            }
+
+            if (cityInfoDTO.getZipCode() != null) {
+                cityInfo.setZipCode(cityInfoDTO.getZipCode());
+            }
+            System.out.println(cityInfo);
+            em.getTransaction().commit();
+            return new CityInfoDTO(cityInfo);
+        } finally {
+            em.close();
+        }
+    }
+
+    // Delete city
+    public CityInfoDTO deleteCity(Long id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            CityInfo cityInfo = em.find(CityInfo.class, id);
+            em.remove(cityInfo);
+            em.getTransaction().commit();
+            return new CityInfoDTO(cityInfo);
         } finally {
             em.close();
         }

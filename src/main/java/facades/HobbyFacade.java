@@ -3,6 +3,7 @@ package facades;
 import dtos.HobbyDTO;
 import dtos.PersonDTO;
 import entities.Hobby;
+import entities.Person;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.EntityManager;
@@ -28,6 +29,17 @@ public class HobbyFacade {
         return emf.createEntityManager();
     }
 
+    public List<HobbyDTO> getAllHobbies() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h", Hobby.class);
+            List<Hobby> hobbies = query.getResultList();
+            return HobbyDTO.getDTOs(hobbies);
+        } finally {
+            em.close();
+        }
+    }
+
     // Creating a new Hobby
     public HobbyDTO create(HobbyDTO hobbyDTO) {
         Hobby hobby = new Hobby(hobbyDTO.getName(), hobbyDTO.getDescription());
@@ -42,29 +54,38 @@ public class HobbyFacade {
         return new HobbyDTO(hobby);
     }
 
-    // Get all hobbies by personDTO
-    public List<HobbyDTO> getAllHobbiesByPerson(PersonDTO personDTO) {
+    // Edit hobby
+    public HobbyDTO editHobby(HobbyDTO hobbyDTO) {
         EntityManager em = getEntityManager();
         try {
-            TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h JOIN h.persons p WHERE p.id = :id", Hobby.class);
-            query.setParameter("id", personDTO.getId());
-            List<Hobby> hobbies = query.getResultList();
-            return HobbyDTO.getDTOs(hobbies);
+            em.getTransaction().begin();
+            Hobby hobby = em.find(Hobby.class, hobbyDTO.getId());
+            if (hobbyDTO.getName() != null) {
+                hobby.setName(hobbyDTO.getName());
+            }
+
+            if (hobbyDTO.getDescription() != null) {
+                hobby.setDescription(hobbyDTO.getDescription());
+            }
+
+            em.getTransaction().commit();
+            return new HobbyDTO(hobby);
         } finally {
             em.close();
         }
     }
 
-    // Get all hobbies
-    public List<HobbyDTO> getAllHobbies() {
+    // Delete hobby
+    public HobbyDTO deleteHobby(Long id) {
         EntityManager em = getEntityManager();
         try {
-            TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h", Hobby.class);
-            List<Hobby> hobbies = query.getResultList();
-            return HobbyDTO.getDTOs(hobbies);
+            em.getTransaction().begin();
+            Hobby hobby = em.find(Hobby.class, id);
+            em.remove(hobby);
+            em.getTransaction().commit();
+            return new HobbyDTO(hobby);
         } finally {
             em.close();
         }
     }
-
 }

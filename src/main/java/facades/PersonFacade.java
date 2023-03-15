@@ -32,6 +32,16 @@ public class PersonFacade {
         return emf.createEntityManager();
     }
 
+    public List<PersonDTO> getAllPersons() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p", Person.class);
+            return PersonDTO.getDTOs(query.getResultList());
+        } finally {
+            em.close();
+        }
+    }
+
     // Creating a new Person
     public PersonDTO create(PersonDTO personDTO) {
         Person person = new Person(personDTO.getEmail(), personDTO.getFirstName(), personDTO.getLastName());
@@ -44,96 +54,6 @@ public class PersonFacade {
             em.close();
         }
         return new PersonDTO(person);
-    }
-
-    // Adding a Hobby to a Person
-    public void addHobby(Long personId, Long hobbyId) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            Person person = em.find(Person.class, personId);
-            Hobby hobby = em.find(Hobby.class, hobbyId);
-            person.getHobbies().add(hobby);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
-
-    // Find all persons
-    public List<PersonDTO> getAllPersons() {
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p", Person.class);
-            return PersonDTO.getDTOs(query.getResultList());
-        } finally {
-            em.close();
-        }
-    }
-
-    // Get information about a person given a phone number
-    public PersonDTO getPersonByPhone(String phone) throws PersonNotFoundException {
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p JOIN p.phones ph WHERE ph.number = :phone", Person.class);
-            query.setParameter("phone", phone);
-
-            return new PersonDTO(query.getSingleResult());
-        } catch (Exception e) {
-            throw new PersonNotFoundException("No person with phone number " + phone + " found");
-        } finally {
-            em.close();
-        }
-    }
-
-    // Gets the number of persons in the database
-    public int getPersonCount() {
-        Set<Person> persons = new HashSet<>();
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p", Person.class);
-            persons.addAll(query.getResultList());
-        } finally {
-            em.close();
-        }
-        return persons.size();
-    }
-
-    // Get the number of people given a hobby
-    public int getPersonCountByHobby(String hobby) {
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p JOIN p.hobbies h WHERE h.name = :hobby", Person.class);
-            query.setParameter("hobby", hobby);
-            return query.getResultList().size();
-        } finally {
-            em.close();
-        }
-    }
-
-    // Get persons living in a given zip code
-    public List<PersonDTO> getPersonsByZipCode(int zipCode) {
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p JOIN p.address a WHERE a.cityInfo.zipCode = :zipCode", Person.class);
-            query.setParameter("zipCode", zipCode);
-            return PersonDTO.getDTOs(query.getResultList());
-        } finally {
-            em.close();
-        }
-    }
-
-    // Get persons with a given hobby
-    public List<PersonDTO> getPersonsWithHobby(String hobby) {
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p JOIN p.hobbies h WHERE h.name = :hobby", Person.class);
-            query.setParameter("hobby", hobby);
-            List<Person> persons = query.getResultList();
-            return PersonDTO.getDTOs(persons);
-        } finally {
-            em.close();
-        }
     }
 
     // Edit person
@@ -158,14 +78,20 @@ public class PersonFacade {
         }
     }
 
-    public static void main(String[] args) {
-        emf = EMF_Creator.createEntityManagerFactory();
-        PersonFacade facade = getPersonFacade(emf);
-        PersonDTO personDTO = new PersonDTO();
-        personDTO.setId(2L);
-        personDTO.setFirstName("Jens");
-        personDTO.setLastName("Petersen");
-        facade.editPerson(personDTO);
+    // Delete person
+    public PersonDTO deletePerson(Long id) throws PersonNotFoundException {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Person person = em.find(Person.class, id);
+            if (person == null) {
+                throw new PersonNotFoundException("Could not delete, provided id does not exist");
+            }
+            em.remove(person);
+            em.getTransaction().commit();
+            return new PersonDTO(person);
+        } finally {
+            em.close();
+        }
     }
-
 }

@@ -28,7 +28,7 @@ public class Person {
     @Column(name = "lastName")
     private String lastName;
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.REMOVE)
     private List<Phone> phones;
 
     @ManyToMany(cascade = CascadeType.ALL)

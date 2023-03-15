@@ -1,6 +1,8 @@
 package facades;
 
+import dtos.PersonDTO;
 import dtos.PhoneDTO;
+import entities.Person;
 import entities.Phone;
 import lombok.NoArgsConstructor;
 
@@ -48,6 +50,41 @@ public class PhoneFacade {
             TypedQuery<Phone> query = em.createQuery("SELECT p FROM Phone p", Phone.class);
             List<Phone> phones = query.getResultList();
             return PhoneDTO.getDTOs(phones);
+        } finally {
+            em.close();
+        }
+    }
+
+    // Edit phone
+    public PhoneDTO editPhone(PhoneDTO phoneDTO) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Phone phone = em.find(Phone.class, phoneDTO.getId());
+            if (phoneDTO.getNumber() != null) {
+                phone.setNumber(phoneDTO.getNumber());
+            }
+
+            if (phoneDTO.getDescription() != null) {
+                phone.setDescription(phoneDTO.getDescription());
+            }
+
+            em.getTransaction().commit();
+            return new PhoneDTO(phone);
+        } finally {
+            em.close();
+        }
+    }
+
+    // Delete phone
+    public PhoneDTO deletePhone(Long id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Phone phone = em.find(Phone.class, id);
+            em.remove(phone);
+            em.getTransaction().commit();
+            return new PhoneDTO(phone);
         } finally {
             em.close();
         }

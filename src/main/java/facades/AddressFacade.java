@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import java.util.List;
 
 @NoArgsConstructor
 public class AddressFacade {
@@ -27,6 +29,17 @@ public class AddressFacade {
         return emf.createEntityManager();
     }
 
+    public List<AddressDTO> getAllAddresses () {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Address> query = em.createQuery("SELECT a FROM Address a", Address.class);
+            List<Address> addressList = query.getResultList();
+            return AddressDTO.getDTOs(addressList);
+        } finally {
+            em.close();
+        }
+    }
+
     // Creating a new Address
     public AddressDTO create(AddressDTO addressDTO) {
         Address address = new Address(addressDTO.getStreet(), addressDTO.getAdditionalInfo());
@@ -41,12 +54,36 @@ public class AddressFacade {
         return new AddressDTO(address);
     }
 
-    // Get address from personDTO
-    public AddressDTO getAddressFromPerson(PersonDTO personDTO) {
+    // Edit address
+    public AddressDTO editAddress(AddressDTO addressDTO) {
         EntityManager em = getEntityManager();
-        Person person = em.find(Person.class, personDTO.getId());
         try {
-            return new AddressDTO(em.find(Address.class, person.getAddress().getId()));
+            em.getTransaction().begin();
+            Address address = em.find(Address.class, addressDTO.getId());
+            if (addressDTO.getStreet() != null) {
+                address.setStreet(addressDTO.getStreet());
+            }
+
+            if (addressDTO.getAdditionalInfo() != null) {
+                address.setAdditionalInfo(addressDTO.getAdditionalInfo());
+            }
+
+            em.getTransaction().commit();
+            return new AddressDTO(address);
+        } finally {
+            em.close();
+        }
+    }
+
+    // Delete address
+    public AddressDTO deleteAddress(Long id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Address address = em.find(Address.class, id);
+            em.remove(address);
+            em.getTransaction().commit();
+            return new AddressDTO(address);
         } finally {
             em.close();
         }
