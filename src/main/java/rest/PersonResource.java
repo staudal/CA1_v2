@@ -35,6 +35,14 @@ public class PersonResource {
         return Response.ok().entity(GSON.toJson(FACADE.getAllPersons())).build();
     }
 
+    @GET
+    @Path("/hobby/{hobby}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getPersonsByHobby(@PathParam("hobby") String hobby) {
+        List<PersonDTO> personDTOs = FACADE.getPersonsByHobby(hobby);
+        return Response.ok().entity(GSON.toJson(personDTOs)).build();
+    }
+
     @POST
     @Path("/add")
     @Produces({MediaType.APPLICATION_JSON})

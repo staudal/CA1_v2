@@ -1,4 +1,4 @@
-GET http://localhost:8080/rest_start_code_war_exploded/api/address/all
+GET http://localhost:8080/rest_start_code_war_exploded/api/person/hobby/athletics
 
 ###
 PUT http://localhost:8080/rest_start_code_war_exploded/api/address/edit/6

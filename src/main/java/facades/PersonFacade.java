@@ -94,4 +94,16 @@ public class PersonFacade {
             em.close();
         }
     }
+
+    // Get persons by hobby
+    public List<PersonDTO> getPersonsByHobby(String hobby) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Person> query = em.createQuery("SELECT p FROM Person p JOIN p.hobbies h WHERE h.name = :hobby", Person.class);
+            query.setParameter("hobby", hobby);
+            return PersonDTO.getDTOs(query.getResultList());
+        } finally {
+            em.close();
+        }
+    }
 }
