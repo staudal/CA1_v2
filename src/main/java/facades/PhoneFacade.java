@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import java.util.List;
 
 @NoArgsConstructor
 public class PhoneFacade {
@@ -37,6 +39,18 @@ public class PhoneFacade {
             em.close();
         }
         return new PhoneDTO(phone);
+    }
+
+    // Get all phones
+    public List<PhoneDTO> getAllPhones() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Phone> query = em.createQuery("SELECT p FROM Phone p", Phone.class);
+            List<Phone> phones = query.getResultList();
+            return PhoneDTO.getDTOs(phones);
+        } finally {
+            em.close();
+        }
     }
 
 }
