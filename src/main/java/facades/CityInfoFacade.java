@@ -30,6 +30,18 @@ public class CityInfoFacade {
         return emf.createEntityManager();
     }
 
+    // Get all city info entities
+    public List<CityInfoDTO> getAllCities () {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c", CityInfo.class);
+            List<CityInfo> cityInfoList = query.getResultList();
+            return CityInfoDTO.getDTOs(cityInfoList);
+        } finally {
+            em.close();
+        }
+    }
+
     // Creating a new city
     public CityInfoDTO create (CityInfoDTO cityInfoDTO) {
         CityInfo cityInfo = new CityInfo(cityInfoDTO.getZipCode(), cityInfoDTO.getCity());
@@ -54,23 +66,4 @@ public class CityInfoFacade {
             em.close();
         }
     }
-
-    // Get all zip codes
-    public List<CityInfoDTO> getAllZipCodes () {
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<CityInfo> query = em.createQuery("SELECT c FROM CityInfo c", CityInfo.class);
-            List<CityInfo> cityInfoList = query.getResultList();
-            return CityInfoDTO.getDTOs(cityInfoList);
-        } finally {
-            em.close();
-        }
-    }
-
-    public static void main(String[] args) {
-        EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
-        CityInfoFacade facade = CityInfoFacade.getCityInfoFacade(emf);
-        System.out.println(facade.getAllZipCodes().size());
-    }
-
 }
