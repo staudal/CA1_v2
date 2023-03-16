@@ -48,7 +48,15 @@ public class HobbyResource {
     public Response addHobby(String hobby) {
         HobbyDTO hobbyDTO = GSON.fromJson(hobby, HobbyDTO.class);
         HobbyDTO newHobby = FACADE.create(hobbyDTO);
-        return Response.ok().entity(GSON.toJson(newHobby)).build();
+        return Response
+        .ok()
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+        .header("Access-Control-Allow-Credentials", "true")
+        .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+        .header("Access-Control-Max-Age", "1209600")
+        .entity(GSON.toJson(newHobby))
+        .build();
     }
 
     @PUT
