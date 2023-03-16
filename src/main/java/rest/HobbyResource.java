@@ -3,8 +3,6 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dtos.HobbyDTO;
-import dtos.PhoneDTO;
-import facades.CityInfoFacade;
 import facades.HobbyFacade;
 import utils.EMF_Creator;
 
@@ -28,12 +26,19 @@ public class HobbyResource {
         return "{\"msg\":\"Hello World\"}";
     }
 
-    // CORS
     @GET
     @Path("/all")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getAllHobbies() {
-        return Response.ok().header("Access-Control-Allow-Origin", "*").entity(GSON.toJson(FACADE.getAllHobbies())).build();
+        return Response
+        .ok()
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+        .header("Access-Control-Allow-Credentials", "true")
+        .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+        .header("Access-Control-Max-Age", "1209600")
+        .entity(GSON.toJson(FACADE.getAllHobbies()))
+        .build();
     }
 
     @POST
