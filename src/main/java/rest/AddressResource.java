@@ -12,7 +12,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-//Todo Remove or change relevant parts before ACTUAL use
 @Path("address")
 public class AddressResource {
 

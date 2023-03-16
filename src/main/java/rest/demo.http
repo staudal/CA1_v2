@@ -1,11 +1,11 @@
 GET http://localhost:8080/rest_start_code_war_exploded/api/person/hobby/athletics
 
 ###
-PUT http://localhost:8080/rest_start_code_war_exploded/api/address/edit/6
+POST http://localhost:8080/api/hobby/add
 Content-Type: application/json
 #User-Agent: Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion
 
-{"street": "ExampleStreet"}
+{"name": "ExampleStreet", "description":  "Some description"}
 
 ###
 
