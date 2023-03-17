@@ -2,10 +2,9 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dtos.HobbyDTO;
 import dtos.PersonDTO;
-import entities.Person;
 import errorhandling.PersonNotFoundException;
+import facades.HobbyFacade;
 import facades.PersonFacade;
 import utils.EMF_Creator;
 
@@ -19,7 +18,8 @@ import java.util.List;
 public class PersonResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
-    private static final PersonFacade FACADE =  PersonFacade.getPersonFacade(EMF);
+    private static final PersonFacade personFacade =  PersonFacade.getPersonFacade(EMF);
+    private static final HobbyFacade hobbyFacade = HobbyFacade.getHobbyFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
             
     @GET
@@ -31,16 +31,23 @@ public class PersonResource {
     @GET
     @Path("/all")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAllPersons() {
-        return Response.ok().header("Access-Control-Allow-Origin", "*").entity(GSON.toJson(FACADE.getAllPersons())).build();
+    public String getAllPersons() {
+        List<PersonDTO> personDTOs = personFacade.getAllPersons();
+        for (PersonDTO personDTO : personDTOs) {
+            personDTO.setHobbies(hobbyFacade.getHobbiesByPerson(personDTO.getId()));
+        }
+        return GSON.toJson(personDTOs);
     }
 
     @GET
     @Path("/hobby/{hobby}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getPersonsByHobby(@PathParam("hobby") String hobby) {
-        List<PersonDTO> personDTOs = FACADE.getPersonsByHobby(hobby);
-        return Response.ok().entity(GSON.toJson(personDTOs)).build();
+    public String getPersonsByHobby(@PathParam("hobby") String hobby) {
+        List<PersonDTO> personDTOs = personFacade.getPersonsByHobby(hobby);
+        for (PersonDTO personDTO : personDTOs) {
+            personDTO.setHobbies(hobbyFacade.getHobbiesByPerson(personDTO.getId()));
+        }
+        return GSON.toJson(personDTOs);
     }
 
     @POST
@@ -49,7 +56,7 @@ public class PersonResource {
     @Consumes({MediaType.APPLICATION_JSON})
     public Response addHobby(String person) {
         PersonDTO personDTO = GSON.fromJson(person, PersonDTO.class);
-        PersonDTO newPerson = FACADE.create(personDTO);
+        PersonDTO newPerson = personFacade.create(personDTO);
         return Response.ok().entity(GSON.toJson(newPerson)).build();
     }
 
@@ -60,7 +67,7 @@ public class PersonResource {
     public Response editPerson(@PathParam("id") Long id, String person) {
         PersonDTO personDTO = GSON.fromJson(person, PersonDTO.class);
         personDTO.setId(id);
-        PersonDTO newPerson = FACADE.editPerson(personDTO);
+        PersonDTO newPerson = personFacade.editPerson(personDTO);
         return Response.ok().entity(GSON.toJson(newPerson)).build();
     }
 
@@ -68,7 +75,19 @@ public class PersonResource {
     @Path("/delete/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response deletePerson(@PathParam("id") Long id) throws PersonNotFoundException {
-        PersonDTO personDTO = FACADE.deletePerson(id);
+        PersonDTO personDTO = personFacade.deletePerson(id);
         return Response.ok().entity(GSON.toJson(personDTO)).build();
+    }
+
+    // Get all persons with hobbies
+    @GET
+    @Path("/allwithhobbies")
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getAllPersonsWithHobbies() {
+        List<PersonDTO> personDTOs = personFacade.getAllPersons();
+        for (PersonDTO personDTO : personDTOs) {
+            personDTO.setHobbies(hobbyFacade.getHobbiesByPerson(personDTO.getId()));
+        }
+        return GSON.toJson(personDTOs);
     }
 }

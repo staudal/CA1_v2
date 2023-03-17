@@ -88,4 +88,16 @@ public class HobbyFacade {
             em.close();
         }
     }
+
+    public List<HobbyDTO> getHobbiesByPerson(Long id) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Hobby> query = em.createQuery("SELECT h FROM Hobby h JOIN h.persons p WHERE p.id = :id", Hobby.class);
+            query.setParameter("id", id);
+            List<Hobby> hobbies = query.getResultList();
+            return HobbyDTO.getDTOs(hobbies);
+        } finally {
+            em.close();
+        }
+    }
 }

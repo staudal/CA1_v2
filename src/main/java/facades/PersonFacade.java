@@ -106,4 +106,19 @@ public class PersonFacade {
             em.close();
         }
     }
+
+    // Add hobby to person
+    public PersonDTO addHobbyToPerson(Long personId, Long hobbyId) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Person person = em.find(Person.class, personId);
+            Hobby hobby = em.find(Hobby.class, hobbyId);
+            person.getHobbies().add(hobby);
+            em.getTransaction().commit();
+            return new PersonDTO(person);
+        } finally {
+            em.close();
+        }
+    }
 }
